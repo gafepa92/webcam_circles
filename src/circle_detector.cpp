@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
         //Reduce the noise so we avoid false circle detection
         cv::GaussianBlur( gray_image, gray_image, cv::Size(GAUSSIAN_BLUR_SIZE, GAUSSIAN_BLUR_SIZE), GAUSSIAN_BLUR_SIGMA );
 
-        //Apply the Hough Transform to find the circles
+        //Apply the Hough Transform to find the circles. It detects the centers of the circles although sometimes the radius detected could not be OK
         cv::HoughCircles( gray_image, circles, CV_HOUGH_GRADIENT, HOUGH_ACCUM_RESOLUTION, MIN_CIRCLE_DIST, CANNY_EDGE_TH, HOUGH_ACCUM_TH, MIN_RADIUS, MAX_RADIUS );
         
         //draw circles on the image      
@@ -85,8 +85,9 @@ int main(int argc, char *argv[])
             {
                     center = cv::Point(cvRound(circles[ii][0]), cvRound(circles[ii][1]));
                     radius = cvRound(circles[ii][2]);
-                    cv::circle(image, center, 5, cv::Scalar(0,0,255), -1, 8, 0 );// circle center in green
+                    cv::circle(image, center, 5, cv::Scalar(0,0,255), -1, 8, 0 );// circle center in green 
                     cv::circle(image, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );// circle perimeter in red
+		    //two types of circles one for a radius selected and the different ones in another colour
             }
         }      
         
