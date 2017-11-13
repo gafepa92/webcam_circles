@@ -17,7 +17,7 @@ const double HOUGH_ACCUM_RESOLUTION = 2;
 const double MIN_CIRCLE_DIST = 40;
 const double HOUGH_ACCUM_TH = 70;
 const int MIN_RADIUS = 20;
-const int MAX_RADIUS = 100;
+const int MAX_RADIUS = 80;
 
 int main(int argc, char *argv[]) 
 {
@@ -72,10 +72,11 @@ int main(int argc, char *argv[])
         // If input image is RGB, convert it to gray 
         cv::cvtColor(image, gray_image, CV_BGR2GRAY);
 
-        //Reduce the noise so we avoid false circle detection
+        //Reduce the noise so we avoid false circle detection filter
         cv::GaussianBlur( gray_image, gray_image, cv::Size(GAUSSIAN_BLUR_SIZE, GAUSSIAN_BLUR_SIZE), GAUSSIAN_BLUR_SIGMA );
 
-        //Apply the Hough Transform to find the circles. It detects the centers of the circles although sometimes the radius detected could not be OK
+        //Apply the Hough Transform to find the circles
+	// third parameter is used to select the Hough method HOUGH_STANDARD,HOUGH_PROBABILISTIC, 		HOUGH_MULTI_SCALE & HOUGH_GRADIENT   
         cv::HoughCircles( gray_image, circles, CV_HOUGH_GRADIENT, HOUGH_ACCUM_RESOLUTION, MIN_CIRCLE_DIST, CANNY_EDGE_TH, HOUGH_ACCUM_TH, MIN_RADIUS, MAX_RADIUS );
         
         //draw circles on the image      
@@ -85,9 +86,8 @@ int main(int argc, char *argv[])
             {
                     center = cv::Point(cvRound(circles[ii][0]), cvRound(circles[ii][1]));
                     radius = cvRound(circles[ii][2]);
-                    cv::circle(image, center, 5, cv::Scalar(0,0,255), -1, 8, 0 );// circle center in green 
-                    cv::circle(image, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );// circle perimeter in red
-		    //two types of circles one for a radius selected and the different ones in another colour
+                    cv::circle(image, center, 5, cv::Scalar(0,0,255), -1, 8, 0 );// circle center in green
+                    cv::circle(image, center, radius, cv::Scalar(255,0,0), 3, 8, 0 );// circle perimeter in red (0,0,x) green (0,x,0) blue (x,0,0)
             }
         }      
         
@@ -97,6 +97,6 @@ int main(int argc, char *argv[])
         cv::imshow("Output Window", image);
 
 		//Waits 1 millisecond to check if a key has been pressed. If so, breaks the loop. Otherwise continues.
-        if(cv::waitKey(1) >= 0) break;
+        if( (unsigned char)(cv::waitKey(30) & 0xff) == 'q' ) break; //line modified as it is in the others files
     }   
 }
